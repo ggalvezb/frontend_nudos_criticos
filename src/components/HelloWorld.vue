@@ -185,6 +185,7 @@
 
 <script setup>
 import { ref, computed, onMounted} from 'vue'
+const API_BASE = import.meta.env.VITE_API_URL
 
 // Datos de ejemplo para proyectos y nudos críticos
 const proyectos_local_respaldo = [
@@ -311,7 +312,7 @@ async function guardarNuevoNudo() {
   try {
     const campo = "Nudo_Critico";
     const resp = await fetch(
-      `https://backend-nudos-criticos-eadacb96aa89.herokuapp.com/proyecto/${encodeURIComponent(proyectoSeleccionado.value.id)}/${encodeURIComponent(campo)}`,
+      `${API_BASE}/proyecto/${encodeURIComponent(proyectoSeleccionado.value.id)}/${encodeURIComponent(campo)}`,
       {
         method: "PATCH",
         headers: { "Content-Type": "application/json" },
@@ -408,8 +409,9 @@ async function guardarCambios() {
   proyectoSeleccionado.value.Nudo_Critico[index] = { ...nudoCriticoSeleccionado.value };
   console.log("Nudo crítico actualizado en el proyecto:", proyectoSeleccionado.value.Nudo_Critico[index]);
   console.log("consulta a enviar: ",proyectoSeleccionado.value);
+
   try {
-    const respuesta = await fetch("https://backend-nudos-criticos-eadacb96aa89.herokuapp.com/proyecto/", {
+    const respuesta = await fetch(`${API_BASE}/proyecto/`, {
       method: "PUT",
       headers: {
         "Content-Type": "application/json"
@@ -435,8 +437,10 @@ const proyectos = ref([])
 
 // Función para obtener los proyectos desde la API
 async function obtenerProyectos() {
+  
   try {
-    const respuesta = await fetch("https://backend-nudos-criticos-eadacb96aa89.herokuapp.com/proyecto/");
+    
+    const respuesta = await fetch(`${API_BASE}/proyecto/`);
     if (!respuesta.ok) {
       throw new Error(`Error al obtener proyectos: ${respuesta.statusText}`);
     }
@@ -452,6 +456,7 @@ async function obtenerProyectos() {
 
 // Llamar a la función obtenerProyectos al montar el componente
 onMounted(() => {
+  console.log("API_BASE: ",API_BASE);
   obtenerProyectos()
 })
 </script>
