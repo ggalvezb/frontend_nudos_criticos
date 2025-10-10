@@ -27,23 +27,27 @@
                 dense
               />
             </div>
-            <v-list>
-              <template v-for="(proyecto, index) in proyectosFiltrados" :key="proyecto.id">
-                <v-list-item @click="seleccionarProyecto(proyecto)" class="cursor-pointer">
+            <div class="lista-scroll">
+              <v-list>
+                <template v-for="(proyecto, index) in proyectosFiltrados" :key="proyecto.id">
+                  <v-list-item @click="seleccionarProyecto(proyecto)" class="cursor-pointer">
+                    <v-list-item-content>
+                      <v-list-item-title class="text-h6">{{ proyecto.Nombre_Proyecto }}</v-list-item-title>
+                      <v-list-item-subtitle>Código: {{ proyecto.Codigo }}</v-list-item-subtitle>
+                      <v-list-item-subtitle>Monitor: {{ proyecto.Monitor }}</v-list-item-subtitle>
+                    </v-list-item-content>
+                  </v-list-item>
+                  <v-divider v-if="index < proyectos.length - 1" />
+                </template>
+                <v-list-item v-if="proyectos.length === 0">
                   <v-list-item-content>
-                    <v-list-item-title class="text-h6">{{ proyecto.Nombre_Proyecto }}</v-list-item-title>
-                    <v-list-item-subtitle>Código: {{ proyecto.Codigo }}</v-list-item-subtitle>
-                    <v-list-item-subtitle>Monitor: {{ proyecto.Monitor }}</v-list-item-subtitle>
+                    <v-list-item-title class="text-h6">No hay proyectos registrados.</v-list-item-title>
                   </v-list-item-content>
                 </v-list-item>
-                <v-divider v-if="index < proyectos.length - 1" />
-              </template>
-              <v-list-item v-if="proyectos.length === 0">
-                <v-list-item-content>
-                  <v-list-item-title class="text-h6">No hay proyectos registrados.</v-list-item-title>
-                </v-list-item-content>
-              </v-list-item>
-            </v-list>
+              </v-list>
+
+            </div>
+
           </v-card>
         </v-col>
 
@@ -75,22 +79,24 @@
               />
             </div>
             <p class="text-subtitle-1">Proyecto: {{ proyectoSeleccionado?.Nombre_Proyecto || 'Seleccione un proyecto' }}</p>
-            <v-list>
-              <template v-for="(nudo, index) in nudosFiltrados" :key="index">
-                <v-list-item @click="seleccionarNudoCritico(nudo)" class="cursor-pointer">
+            <div class="lista-scroll">
+              <v-list>
+                <template v-for="(nudo, index) in nudosFiltrados" :key="index">
+                  <v-list-item @click="seleccionarNudoCritico(nudo)" class="cursor-pointer">
+                    <v-list-item-content>
+                      <v-list-item-title class="text-h6">Estado: {{ nudo.Estado }}</v-list-item-title>
+                      <v-list-item-subtitle>Clasificación: {{ nudo.Clasificacion }}</v-list-item-subtitle>
+                    </v-list-item-content>
+                  </v-list-item>
+                  <v-divider v-if="index < proyectoSeleccionado.Nudo_Critico.length - 1" />
+                </template>
+                <v-list-item v-if="!proyectoSeleccionado || proyectoSeleccionado.Nudo_Critico.length === 0">
                   <v-list-item-content>
-                    <v-list-item-title class="text-h6">Estado: {{ nudo.Estado }}</v-list-item-title>
-                    <v-list-item-subtitle>Clasificación: {{ nudo.Clasificacion }}</v-list-item-subtitle>
+                    <v-list-item-title class="text-h6">No hay nudos críticos registrados.</v-list-item-title>
                   </v-list-item-content>
                 </v-list-item>
-                <v-divider v-if="index < proyectoSeleccionado.Nudo_Critico.length - 1" />
-              </template>
-              <v-list-item v-if="!proyectoSeleccionado || proyectoSeleccionado.Nudo_Critico.length === 0">
-                <v-list-item-content>
-                  <v-list-item-title class="text-h6">No hay nudos críticos registrados.</v-list-item-title>
-                </v-list-item-content>
-              </v-list-item>
-            </v-list>
+              </v-list> 
+            </div>
           </v-card>
         </v-col>
 
@@ -460,3 +466,14 @@ onMounted(() => {
   obtenerProyectos()
 })
 </script>
+
+
+<style scoped>
+.lista-scroll {
+  max-height: 300px; /* altura máxima antes de activar el scroll */
+  overflow-y: auto; /* habilita scroll vertical */
+  border: 0px solid #ddd;
+  border-radius: 8px;
+  padding-right: 8px;
+}
+</style>
