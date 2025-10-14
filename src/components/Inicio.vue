@@ -387,6 +387,13 @@ const nudosFiltrados = computed(() => {
   if (busquedaEstado.value !== "Todos") {
     filtrados = filtrados.filter((nudo) => nudo.Estado === busquedaEstado.value)
   }
+  // Ordeno los nudos criticos por Estado (Abierto primero) y luego por Fecha_Creacion (más reciente primero)
+  filtrados.sort((a, b) => {
+    if (a.Estado === b.Estado) {
+      return new Date(b.Fecha_Creacion) - new Date(a.Fecha_Creacion)
+    }
+    return a.Estado === "Abierto" ? -1 : 1
+  })
   return filtrados
 })
 
