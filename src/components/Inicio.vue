@@ -1,7 +1,5 @@
 <template>
-  <v-container class="fill-height" fluid style="padding: 0; max-width:100% !important; background-color: #f5f5f5;">
-<v-row class="mb-4">
-  <v-col>
+  <v-container class="fill-height pa-0" fluid style="padding: 0; max-width:100% !important; background-color: #f5f5f5;">
     <v-app-bar color="primary" dark>
       <v-toolbar-title>Sistema de Registro de Nudos Críticos</v-toolbar-title>
 
@@ -16,9 +14,6 @@
         Descargar Excel
       </v-btn>
     </v-app-bar>
-  </v-col>
-</v-row>
-
       
     <v-row>
       <!-- Lista de proyectos -->
