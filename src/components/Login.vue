@@ -96,6 +96,12 @@ async function onSubmit() {
       u => u.username === form.username && u.password === form.password
     )
     if (!user) throw new Error('Usuario o contraseña incorrectos')
+    // Si es uno de los administradores lo llevo a la página de admin
+    if (['ggalvezb', 'jcaceresf'].includes(user.username)) {
+      router.push('admin')
+      console.log('Login OK', { ...form })
+      return
+    }
     //llevo a la página principal
     router.push('inicio')
     console.log('Login OK', { ...form })

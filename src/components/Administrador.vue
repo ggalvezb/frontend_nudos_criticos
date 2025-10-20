@@ -1,7 +1,7 @@
 <template>
   <v-container class="fill-height pa-0" fluid style="padding: 0; max-width:100% !important; background-color: #f5f5f5;">
     <v-app-bar color="primary" dark>
-      <v-toolbar-title>Sistema de Registro de Nudos Críticos</v-toolbar-title>
+      <v-toolbar-title>Sistema de Registro de Nudos Críticos - Administrador</v-toolbar-title>
 
       <v-spacer></v-spacer>
 
@@ -69,7 +69,11 @@
         <v-card class="pa-4" style="height: 100%;">
           <div class="d-flex justify-space-between align-center">
             <h2 class="text-h5 font-weight-bold">Nudos Críticos</h2>
-            <v-btn color="primary" @click="dialogoNuevoNudo = true">Nuevo Nudo</v-btn>
+            <v-row>
+                <v-btn color="primary" @click="dialogoNuevoNudo = true">Nuevo Nudo</v-btn>
+                <v-divider :thickness="5" class="border-opacity-0"></v-divider>
+                <v-btn color="primary" @click="dalogoEditarProyecto = true">Editar Proyecto</v-btn>
+            </v-row>
           </div>
           <div class="mb-4">
             <!-- Filtro por Estado -->
@@ -199,6 +203,43 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
+
+    <!-- Dialogo para editar un proyecto -->
+    <v-dialog v-model="dalogoEditarProyecto" persistent max-width="500px">
+      <v-card>
+        <v-card-title class="text-h5">Editar un Proyecto</v-card-title>
+        <v-card-text>
+          <v-form ref="formNuevoNudo">
+            <v-text-field
+              v-model="proyectoSeleccionado.Nombre_Proyecto"
+              label="Nombre Proyecto"
+              outlined
+              dense
+            />
+            <v-text-field
+              v-model="proyectoSeleccionado.Codigo"
+              label="Codigo de Proyecto"
+              outlined
+              dense
+            />
+            <v-select
+              v-model="proyectoSeleccionado.Monitor"
+              :items="monitores"
+              label="Estado"
+              outlined
+              dense
+            />
+
+
+          </v-form>
+        </v-card-text>
+        <v-card-actions>
+          <v-btn color="primary" @click="guardarEditarProyecto">Guardar</v-btn>
+          <v-btn text @click="dalogoEditarProyecto = false">Cancelar</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
   </v-container>
 </template>
 
@@ -321,6 +362,10 @@ async function descargarExcel() {
 const monitores = ["Todos", "Carolina Espinosa","Macarena Guerra","Claudia Pastenes","Katherinne Rodriguez","Alejandra Lobos","Javiera Diaz","Javiera Caceres","Joel Cáceres"]
 const clasificaciones = ["Todas",'AGUAS ANDINAS', 'BOMBEROS', 'CGE', 'CNM', 'DGA', 'DGAC', 'DIA', 'DOM', 'ENEL', 'ENEL COLINA', 'IMIV', 'MOP', 'PAVEL', 'SACYR', 'SEC', 'SEREMITT', 'UOCT']
 const estados = ["Todos", "Abierto", "Resuelto"]
+
+// Estado para Editar Proyecto
+const dalogoEditarProyecto = ref(false)
+
 
 // Estado para el diálogo y nuevo nudo crítico
 const dialogoNuevoNudo = ref(false)
@@ -476,6 +521,33 @@ async function guardarCambios() {
     alert("Hubo un error al guardar los cambios, contacte al administrador.");
   }
 }
+
+// Función para guardar los cambios al editar un proyecto
+async function guardarEditarProyecto() {
+    console.log("Proyecto editado:", proyectoSeleccionado.value)
+    
+    try {
+        const respuesta = await fetch(`${API_BASE}/proyecto/`, {
+        method: "PUT",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        
+        body: JSON.stringify(proyectoSeleccionado.value)
+        });
+        if (!respuesta.ok) {
+        throw new Error(`Error al actualizar el proyecto: ${respuesta.statusText}`);
+        }
+    
+        const datos = await respuesta.json();
+        console.log("Proyecto actualizado con éxito");
+        alert("Proyecto actualizado correctamente");
+        dalogoEditarProyecto.value = false
+    } catch (error) {
+        console.error("Error al guardar cambios del proyecto:", error);
+        alert("Hubo un error al guardar los cambios del proyecto, contacte al administrador.");
+    }
+    }
 
 // Estado reactivo para los proyectos obtenidos desde la API
 const proyectos = ref([])
