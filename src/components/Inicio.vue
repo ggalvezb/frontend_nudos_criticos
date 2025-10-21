@@ -138,6 +138,12 @@
               outlined
               dense
             />
+            <v-textarea
+              v-model="nudoCriticoSeleccionado.Informacion_Adicional"
+              label="Información Adicional"
+              outlined
+              dense
+            />
             <v-text-field
               v-model="nudoCriticoSeleccionado.Fecha_Creacion"
               label="Fecha de Creación"

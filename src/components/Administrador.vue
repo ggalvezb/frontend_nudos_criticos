@@ -113,10 +113,10 @@
                     <v-list-item-subtitle>Clasificación: {{ nudo.Clasificacion }}</v-list-item-subtitle>
                   </v-list-item-content>
                     <template #append>
-                      <v-icon size="22" color="grey-darken-1" class="mr-2 cursor-pointer" @click.stop="eliminarNudo(nudo)">
+                      <v-icon size="22" color="grey-darken-1" class="mr-2 cursor-pointer" @click.stop="abrirDialogoEliminar(nudo)">
                         mdi-delete
                       </v-icon>
-                  </template>
+                    </template>
                 </v-list-item>
                 <v-divider v-if="index < proyectoSeleccionado.Nudo_Critico.length - 1" />
               </template>
@@ -152,6 +152,12 @@
             <v-textarea
               v-model="nudoCriticoSeleccionado.Descripcion"
               label="Descripción"
+              outlined
+              dense
+            />
+            <v-textarea
+              v-model="nudoCriticoSeleccionado.Informacion_Adicional"
+              label="Información Adicional"
               outlined
               dense
             />
@@ -253,6 +259,18 @@
       </v-card>
     </v-dialog>
 
+    <!-- Dialogo para confirmar eliminacion de nudo critico -->
+     <v-dialog v-model="dialogoEliminar" max-width="420">
+      <v-card>
+        <v-card-title class="text-h6">Confirmar eliminación</v-card-title>
+        <v-card-text>¿Estás seguro de que deseas eliminar este nudo?</v-card-text>
+        <v-card-actions class="justify-end">
+          <v-btn text @click="dialogoEliminar = false">Cancelar</v-btn>
+          <v-btn color="error" @click="confirmarEliminacion">Eliminar</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
   </v-container>
 </template>
 
@@ -273,8 +291,9 @@ const busquedaMonitor = ref("Todos")
 const busquedaClasificacion = ref("Todas")
 const busquedaEstado = ref("Todos")
 const nudoCriticoSeleccionado = ref(null)
-
-
+// Dialogos para elimar nudo critico
+const dialogoEliminar = ref(false)
+const nudoAEliminar = ref(null)
 
 function normalizaFecha(f) {
   if (!f) return ""
@@ -623,6 +642,21 @@ async function eliminarNudo(nudo) {
     console.error("Error al eliminar nudo crítico (BD):", err);
     alert("No se pudo eliminar el nudo crítico. Revisa la consola para más detalles.");
   }
+}
+
+// funcion para abrir el dialogo de confirmacion de eliminacion
+function abrirDialogoEliminar(nudo) {
+  nudoAEliminar.value = nudo
+  dialogoEliminar.value = true
+}
+
+//Funcion para confirmar la eliminacion del nudo critico
+async function confirmarEliminacion() {
+  if (!nudoAEliminar.value) return
+  console.log("Se elimina proyecto:", nudoAEliminar.value)
+  await eliminarNudo(nudoAEliminar.value)
+  dialogoEliminar.value = false
+  nudoAEliminar.value = null
 }
 
 </script>
