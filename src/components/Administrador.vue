@@ -67,14 +67,22 @@
       <!-- Lista de Nudos Críticos -->
       <v-col cols="12" md="4">
         <v-card class="pa-4" style="height: 100%;">
-          <div class="d-flex justify-space-between align-center">
-            <h2 class="text-h5 font-weight-bold">Nudos Críticos</h2>
-            <v-row>
-                <v-btn color="primary" @click="dialogoNuevoNudo = true">Nuevo Nudo</v-btn>
-                <v-divider :thickness="5" class="border-opacity-0"></v-divider>
-                <v-btn color="primary" @click="dalogoEditarProyecto = true">Editar Proyecto</v-btn>
-            </v-row>
-          </div>
+        <v-row class="align-center justify-space-between">
+          <!-- Título -->
+          <v-col cols="12" md="4" class="d-flex align-center">
+            <h2 class="text-h5 font-weight-bold mb-0">Nudos Críticos</h2>
+          </v-col>
+
+          <!-- Botones -->
+          <v-col cols="12" md="8" class="d-flex justify-end flex-wrap">
+            <v-btn color="primary" class="mb-2 mr-2" @click="dialogoNuevoNudo = true">
+              NUEVO NUDO
+            </v-btn>
+            <v-btn color="primary" class="mb-2" @click="dialogoEditarProyecto = true">
+              EDITAR PROYECTO
+            </v-btn>
+          </v-col>
+        </v-row>
           <div class="mb-4">
             <!-- Filtro por Estado -->
             <v-select
