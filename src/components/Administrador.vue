@@ -112,6 +112,11 @@
                     <v-list-item-title class="text-h6">Estado: {{ nudo.Estado }}</v-list-item-title>
                     <v-list-item-subtitle>Clasificación: {{ nudo.Clasificacion }}</v-list-item-subtitle>
                   </v-list-item-content>
+                    <template #append>
+                      <v-icon size="22" color="grey-darken-1" class="mr-2 cursor-pointer" @click.stop="eliminarNudo(nudo)">
+                        mdi-delete
+                      </v-icon>
+                  </template>
                 </v-list-item>
                 <v-divider v-if="index < proyectoSeleccionado.Nudo_Critico.length - 1" />
               </template>
@@ -213,7 +218,7 @@
     </v-dialog>
 
     <!-- Dialogo para editar un proyecto -->
-    <v-dialog v-model="dalogoEditarProyecto" persistent max-width="500px">
+    <v-dialog v-model="dialogoEditarProyecto" persistent max-width="500px">
       <v-card>
         <v-card-title class="text-h5">Editar un Proyecto</v-card-title>
         <v-card-text>
@@ -243,7 +248,7 @@
         </v-card-text>
         <v-card-actions>
           <v-btn color="primary" @click="guardarEditarProyecto">Guardar</v-btn>
-          <v-btn text @click="dalogoEditarProyecto = false">Cancelar</v-btn>
+          <v-btn text @click="dialogoEditarProyecto = false">Cancelar</v-btn>
         </v-card-actions>
       </v-card>
     </v-dialog>
@@ -255,6 +260,21 @@
 import { ref, computed, onMounted} from 'vue'
 const API_BASE = import.meta.env.VITE_API_URL
 import * as XLSX from "xlsx"
+
+// Lista de monitores
+const monitores = ["Todos", "Carolina Espinosa","Macarena Guerra","Claudia Pastenes","Katherinne Rodriguez","Alejandra Lobos","Javiera Diaz","Javiera Caceres","Joel Cáceres"]
+const clasificaciones = ["Todas",'AGUAS ANDINAS', 'BOMBEROS', 'CGE', 'CNM', 'DGA', 'DGAC', 'DIA', 'DOM', 'ENEL', 'ENEL COLINA', 'IMIV', 'MOP', 'PAVEL', 'SACYR', 'SEC', 'SEREMITT', 'UOCT']
+const estados = ["Todos", "Abierto", "Resuelto"]
+
+// Estado reactivo para el proyecto y nudo crítico seleccionados
+const proyectoSeleccionado = ref(null)
+const busquedaProyecto = ref("")
+const busquedaMonitor = ref("Todos")
+const busquedaClasificacion = ref("Todas")
+const busquedaEstado = ref("Todos")
+const nudoCriticoSeleccionado = ref(null)
+
+
 
 function normalizaFecha(f) {
   if (!f) return ""
@@ -365,15 +385,8 @@ async function descargarExcel() {
   }
 }
 
-
-// Lista de monitores
-const monitores = ["Todos", "Carolina Espinosa","Macarena Guerra","Claudia Pastenes","Katherinne Rodriguez","Alejandra Lobos","Javiera Diaz","Javiera Caceres","Joel Cáceres"]
-const clasificaciones = ["Todas",'AGUAS ANDINAS', 'BOMBEROS', 'CGE', 'CNM', 'DGA', 'DGAC', 'DIA', 'DOM', 'ENEL', 'ENEL COLINA', 'IMIV', 'MOP', 'PAVEL', 'SACYR', 'SEC', 'SEREMITT', 'UOCT']
-const estados = ["Todos", "Abierto", "Resuelto"]
-
 // Estado para Editar Proyecto
-const dalogoEditarProyecto = ref(false)
-
+const dialogoEditarProyecto = ref(false)
 
 // Estado para el diálogo y nuevo nudo crítico
 const dialogoNuevoNudo = ref(false)
@@ -436,14 +449,6 @@ async function guardarNuevoNudo() {
     console.log("Seleccione un proyecto antes de agregar un nudo crítico.")
   }
 }
-
-// Estado reactivo para el proyecto y nudo crítico seleccionados
-const proyectoSeleccionado = ref(null)
-const busquedaProyecto = ref("")
-const busquedaMonitor = ref("Todos")
-const busquedaClasificacion = ref("Todas")
-const busquedaEstado = ref("Todos")
-const nudoCriticoSeleccionado = ref(null)
 
 // Computed para filtrar los proyectos según la búsqueda y el monitor
 const proyectosFiltrados = computed(() => {
@@ -550,7 +555,7 @@ async function guardarEditarProyecto() {
         const datos = await respuesta.json();
         console.log("Proyecto actualizado con éxito");
         alert("Proyecto actualizado correctamente");
-        dalogoEditarProyecto.value = false
+        dialogoEditarProyecto.value = false
     } catch (error) {
         console.error("Error al guardar cambios del proyecto:", error);
         alert("Hubo un error al guardar los cambios del proyecto, contacte al administrador.");
@@ -576,15 +581,51 @@ async function obtenerProyectos() {
   }
 }
 
-
-
 // Llamar a la función obtenerProyectos al montar el componente
 onMounted(() => {
   console.log("API_BASE: ",API_BASE);
   obtenerProyectos()
 })
-</script>
 
+// funcion para eliminar nudo critico de la base de datos
+async function eliminarNudo(nudo) {
+  if (!proyectoSeleccionado.value) return;
+
+  const index = proyectoSeleccionado.value.Nudo_Critico.findIndex(
+    (n) => n.id_nudo === nudo.id_nudo
+  );
+  if (index === -1) return;
+
+  // Eliminar el nudo crítico del array
+  proyectoSeleccionado.value.Nudo_Critico.splice(index, 1);
+
+  try {
+    const campo = "Nudo_Critico";
+    const resp = await fetch(
+      `${API_BASE}/proyecto/${encodeURIComponent(proyectoSeleccionado.value.id)}/${encodeURIComponent(campo)}`,
+      {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(proyectoSeleccionado.value),
+      }
+    );
+
+    if (!resp.ok) {
+      const txt = await resp.text().catch(() => "");
+      throw new Error(`PATCH falló: ${resp.status} ${resp.statusText} ${txt}`);
+    }
+
+    // Si el nudo eliminado era el seleccionado, limpiar la selección
+    if (nudoCriticoSeleccionado.value && nudoCriticoSeleccionado.value.id_nudo === nudo.id_nudo) {
+      nudoCriticoSeleccionado.value = null;
+    }
+  } catch (err) {
+    console.error("Error al eliminar nudo crítico (BD):", err);
+    alert("No se pudo eliminar el nudo crítico. Revisa la consola para más detalles.");
+  }
+}
+
+</script>
 
 <style scoped>
 .lista-scroll {
