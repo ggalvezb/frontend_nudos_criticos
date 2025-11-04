@@ -144,7 +144,7 @@
             />
             <v-select
               v-model="nudoCriticoSeleccionado.Clasificacion"
-              :items="['ENEL', 'Aguas Andinas', 'SEREMI']"
+              :items="['AGUAS ANDINAS','APR', 'BOMBEROS', 'CGE', 'CNM', 'DGA', 'DGAC', 'DIA', 'DOH', 'DOM','DTPM', 'ENEL', 'ENEL COLINA', 'IMIV','METRO GAS', 'MOP', 'PAVEL', 'SACYR', 'SEC', 'SEREMITT', 'UOCT']"
               label="Clasificación"
               outlined
               dense
@@ -197,7 +197,7 @@
             />
             <v-select
               v-model="nuevoNudo.Clasificacion"
-              :items="['AGUAS ANDINAS', 'BOMBEROS', 'CGE', 'CNM', 'DGA', 'DGAC', 'DIA', 'DOM', 'ENEL', 'ENEL COLINA', 'IMIV', 'MOP', 'PAVEL', 'SACYR', 'SEC', 'SEREMITT', 'UOCT']"
+              :items="['AGUAS ANDINAS','APR', 'BOMBEROS', 'CGE', 'CNM', 'DGA', 'DGAC', 'DIA', 'DOH', 'DOM','DTPM', 'ENEL', 'ENEL COLINA', 'IMIV','METRO GAS', 'MOP', 'PAVEL', 'SACYR', 'SEC', 'SEREMITT', 'UOCT']"
               label="Clasificación"
               outlined
               dense
@@ -281,7 +281,7 @@ import * as XLSX from "xlsx"
 
 // Lista de monitores
 const monitores = ["Todos", "Carolina Espinosa","Macarena Guerra","Claudia Pastenes","Katherinne Rodriguez","Alejandra Lobos","Javiera Diaz","Javiera Caceres","Joel Cáceres"]
-const clasificaciones = ["Todas",'AGUAS ANDINAS', 'BOMBEROS', 'CGE', 'CNM', 'DGA', 'DGAC', 'DIA', 'DOM', 'ENEL', 'ENEL COLINA', 'IMIV', 'MOP', 'PAVEL', 'SACYR', 'SEC', 'SEREMITT', 'UOCT']
+const clasificaciones = ["Todas",'AGUAS ANDINAS','APR', 'BOMBEROS', 'CGE', 'CNM', 'DGA', 'DGAC', 'DIA', 'DOH', 'DOM','DTPM', 'ENEL', 'ENEL COLINA', 'IMIV','METRO GAS', 'MOP', 'PAVEL', 'SACYR', 'SEC', 'SEREMITT', 'UOCT']
 const estados = ["Todos", "Abierto", "Resuelto"]
 
 // Estado reactivo para el proyecto y nudo crítico seleccionados

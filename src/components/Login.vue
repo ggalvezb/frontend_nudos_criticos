@@ -73,6 +73,7 @@ const users = [
   { username: 'jcaceresr', password: 'Serviu2025' },
   { username: 'jcaceresf', password: 'Serviu2025' },
   { username: 'asignorelli', password: 'Serviu2025' },
+  { username: 'gsotov', password: 'Serviu2025' },
 ]
 
 const form = reactive({
