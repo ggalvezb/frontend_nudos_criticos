@@ -127,7 +127,7 @@
             />
             <v-select
               v-model="nudoCriticoSeleccionado.Clasificacion"
-              :items="['AGUAS ANDINAS','APR', 'BOMBEROS', 'CGE', 'CNM', 'DGA', 'DGAC', 'DIA', 'DOH', 'DOM','DTPM', 'ENEL', 'ENEL COLINA', 'IMIV','METRO GAS', 'MOP', 'PAVEL', 'SACYR', 'SEC', 'SEREMITT', 'UOCT']"
+              :items="['ALCANTARILLADO','AGUAS ANDINAS','ALUMBRADO PÚBLICO','APR', 'BOMBEROS', 'CGE', 'CNM','CONSTRUCTORA', 'DGA', 'DGAC', 'DIA','DIMAO','DIMAS', 'DOH', 'DOM','DTPM', 'ENEL', 'ENEL COLINA', 'IMIV','METRO GAS','MINVU', 'MOP','OBRA', 'PAVEL', 'SACYR', 'SEC', 'SEREMITT','SEREMI SALUD','SEREMI VIVIENDA','SERVIU','SMAPA','TRANSITO MUNICIPAL','TEP', 'UOCT']"
               label="Clasificación"
               outlined
               dense
@@ -180,7 +180,7 @@
             />
             <v-select
               v-model="nuevoNudo.Clasificacion"
-              :items="['AGUAS ANDINAS','APR', 'BOMBEROS', 'CGE', 'CNM', 'DGA', 'DGAC', 'DIA', 'DOH', 'DOM','DTPM', 'ENEL', 'ENEL COLINA', 'IMIV','METRO GAS', 'MOP', 'PAVEL', 'SACYR', 'SEC', 'SEREMITT', 'UOCT']"
+              :items="['ALCANTARILLADO','AGUAS ANDINAS','ALUMBRADO PÚBLICO','APR', 'BOMBEROS', 'CGE', 'CNM','CONSTRUCTORA', 'DGA', 'DGAC', 'DIA','DIMAO','DIMAS', 'DOH', 'DOM','DTPM', 'ENEL', 'ENEL COLINA', 'IMIV','METRO GAS','MINVU', 'MOP','OBRA', 'PAVEL', 'SACYR', 'SEC', 'SEREMITT','SEREMI SALUD','SEREMI VIVIENDA','SERVIU','SMAPA','TRANSITO MUNICIPAL','TEP', 'UOCT']"
               label="Clasificación"
               outlined
               dense
@@ -325,7 +325,7 @@ async function descargarExcel() {
 
 // Lista de monitores
 const monitores = ["Todos", "Carolina Espinosa","Macarena Guerra","Claudia Pastenes","Katherinne Rodriguez","Alejandra Lobos","Javiera Diaz","Javiera Caceres","Joel Cáceres"]
-const clasificaciones = ["Todas",'AGUAS ANDINAS','APR', 'BOMBEROS', 'CGE', 'CNM', 'DGA', 'DGAC', 'DIA', 'DOH', 'DOM', 'DTPM', 'ENEL', 'ENEL COLINA', 'IMIV','METRO GAS', 'MOP', 'PAVEL', 'SACYR', 'SEC', 'SEREMITT', 'UOCT']
+const clasificaciones = ["Todas",'ALCANTARILLADO','AGUAS ANDINAS','ALUMBRADO PÚBLICO','APR', 'BOMBEROS', 'CGE', 'CNM','CONSTRUCTORA', 'DGA', 'DGAC', 'DIA','DIMAO','DIMAS', 'DOH', 'DOM','DTPM', 'ENEL', 'ENEL COLINA', 'IMIV','METRO GAS','MINVU', 'MOP','OBRA', 'PAVEL', 'SACYR', 'SEC', 'SEREMITT','SEREMI SALUD','SEREMI VIVIENDA','SERVIU','SMAPA','TRANSITO MUNICIPAL','TEP', 'UOCT']
 const estados = ["Todos", "Abierto", "Resuelto"]
 
 // Estado para el diálogo y nuevo nudo crítico
