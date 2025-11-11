@@ -213,6 +213,21 @@ import { ref, computed, onMounted} from 'vue'
 const API_BASE = import.meta.env.VITE_API_URL
 import * as XLSX from "xlsx"
 
+// Lista de monitores
+const monitores = ["Todos", "Carolina Espinosa","Macarena Guerra","Claudia Pastenes","Katherinne Rodriguez","Alejandra Lobos","Javiera Diaz","Javiera Caceres","Joel Cáceres"]
+const clasificaciones = ["Todas",'ALCANTARILLADO','AGUAS ANDINAS','ALUMBRADO PÚBLICO','APR', 'BOMBEROS', 'CGE', 'CNM','CONSTRUCTORA', 'DGA', 'DGAC', 'DIA','DIMAO','DIMAS', 'DOH', 'DOM','DTPM', 'ENEL', 'ENEL COLINA', 'IMIV','METRO GAS','MINVU', 'MOP','OBRA', 'PAVEL', 'SACYR', 'SEC', 'SEREMITT','SEREMI SALUD','SEREMI VIVIENDA','SERVIU','SMAPA','TRANSITO MUNICIPAL','TEP', 'UOCT']
+const estados = ["Todos", "Abierto", "Resuelto"]
+
+// Estado reactivo para el proyecto y nudo crítico seleccionados
+const proyectoSeleccionado = ref(null)
+const busquedaProyecto = ref("")
+const busquedaMonitor = ref("Todos")
+const busquedaClasificacion = ref("Todas")
+const busquedaEstado = ref("Todos")
+const nudoCriticoSeleccionado = ref(null)
+
+
+// Funcion para normalizar fechas a formato "YYYY-MM-DD"
 function normalizaFecha(f) {
   if (!f) return ""
   // Soporta "YYYY-MM-DD", "DD-MM-YYYY" y "YYYY/MM/DD"
@@ -230,6 +245,7 @@ function normalizaFecha(f) {
   return f // fallback
 }
 
+// Función para descargar Excel con la BD
 async function descargarExcel() {
   try {
     // Siempre traemos TODO desde la API (ignora filtros/selección en pantalla)
@@ -323,10 +339,6 @@ async function descargarExcel() {
 }
 
 
-// Lista de monitores
-const monitores = ["Todos", "Carolina Espinosa","Macarena Guerra","Claudia Pastenes","Katherinne Rodriguez","Alejandra Lobos","Javiera Diaz","Javiera Caceres","Joel Cáceres"]
-const clasificaciones = ["Todas",'ALCANTARILLADO','AGUAS ANDINAS','ALUMBRADO PÚBLICO','APR', 'BOMBEROS', 'CGE', 'CNM','CONSTRUCTORA', 'DGA', 'DGAC', 'DIA','DIMAO','DIMAS', 'DOH', 'DOM','DTPM', 'ENEL', 'ENEL COLINA', 'IMIV','METRO GAS','MINVU', 'MOP','OBRA', 'PAVEL', 'SACYR', 'SEC', 'SEREMITT','SEREMI SALUD','SEREMI VIVIENDA','SERVIU','SMAPA','TRANSITO MUNICIPAL','TEP', 'UOCT']
-const estados = ["Todos", "Abierto", "Resuelto"]
 
 // Estado para el diálogo y nuevo nudo crítico
 const dialogoNuevoNudo = ref(false)
@@ -337,6 +349,7 @@ function obtenerFechaActualFormateada() {
   const año = fecha.getFullYear();
   return `${dia}-${mes}-${año}`;
 }
+
 const nuevoNudo = ref({
   Estado: "",
   Clasificacion: "",
@@ -389,14 +402,6 @@ async function guardarNuevoNudo() {
     console.log("Seleccione un proyecto antes de agregar un nudo crítico.")
   }
 }
-
-// Estado reactivo para el proyecto y nudo crítico seleccionados
-const proyectoSeleccionado = ref(null)
-const busquedaProyecto = ref("")
-const busquedaMonitor = ref("Todos")
-const busquedaClasificacion = ref("Todas")
-const busquedaEstado = ref("Todos")
-const nudoCriticoSeleccionado = ref(null)
 
 // Computed para filtrar los proyectos según la búsqueda y el monitor
 const proyectosFiltrados = computed(() => {
@@ -486,6 +491,32 @@ async function guardarCambios() {
 // Estado reactivo para los proyectos obtenidos desde la API
 const proyectos = ref([])
 
+// Función para obtener los proyectos desde la API con el filtro por decreto del usuario logeado
+async function obtenerProyectos() {
+  try {
+    // Obtengo datos del usuario logeado desde localStorage
+    const decretos_usuario = localStorage.getItem("decretos_usuario");
+    console.log("Decretos usuario:", decretos_usuario);
+
+    let url = `${API_BASE}/proyecto/`;
+    // Si el usuario tiene un decreto asignado, filtro por ese decreto
+    if (decretos_usuario) {
+      url = `${API_BASE}/proyecto/decreto/${encodeURIComponent(decretos_usuario)}`;
+    }
+
+    const respuesta = await fetch(url);
+    if (!respuesta.ok) {
+      throw new Error(`Error al obtener proyectos: ${respuesta.statusText}`);
+    }
+    const datos = await respuesta.json();
+    proyectos.value = JSON.parse(JSON.stringify(datos)); // Normaliza los datos
+  } catch (error) {
+    console.error("Error al obtener los proyectos:", error);
+  }
+}
+
+
+/*
 // Función para obtener los proyectos desde la API
 async function obtenerProyectos() {
   
@@ -501,8 +532,7 @@ async function obtenerProyectos() {
     console.error("Error al obtener los proyectos:", error);
   }
 }
-
-
+*/
 
 // Llamar a la función obtenerProyectos al montar el componente
 onMounted(() => {

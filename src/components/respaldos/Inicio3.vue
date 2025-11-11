@@ -1,7 +1,7 @@
 <template>
   <v-container class="fill-height pa-0" fluid style="padding: 0; max-width:100% !important; background-color: #f5f5f5;">
     <v-app-bar color="primary" dark>
-      <v-toolbar-title>Sistema de Registro de Nudos Críticos - Administrador</v-toolbar-title>
+      <v-toolbar-title>Sistema de Registro de Nudos Críticos</v-toolbar-title>
 
       <v-spacer></v-spacer>
 
@@ -67,22 +67,10 @@
       <!-- Lista de Nudos Críticos -->
       <v-col cols="12" md="4">
         <v-card class="pa-4" style="height: 100%;">
-        <v-row class="align-center justify-space-between">
-          <!-- Título -->
-          <v-col cols="12" md="4" class="d-flex align-center">
-            <h2 class="text-h5 font-weight-bold mb-0">Nudos Críticos</h2>
-          </v-col>
-
-          <!-- Botones -->
-          <v-col cols="12" md="8" class="d-flex justify-end flex-wrap">
-            <v-btn color="primary" class="mb-2 mr-2" @click="dialogoNuevoNudo = true">
-              NUEVO NUDO
-            </v-btn>
-            <v-btn color="primary" class="mb-2" @click="dialogoEditarProyecto = true">
-              EDITAR PROYECTO
-            </v-btn>
-          </v-col>
-        </v-row>
+          <div class="d-flex justify-space-between align-center">
+            <h2 class="text-h5 font-weight-bold">Nudos Críticos</h2>
+            <v-btn color="primary" @click="dialogoNuevoNudo = true">Nuevo Nudo</v-btn>
+          </div>
           <div class="mb-4">
             <!-- Filtro por Estado -->
             <v-select
@@ -112,11 +100,6 @@
                     <v-list-item-title class="text-h6">Estado: {{ nudo.Estado }}</v-list-item-title>
                     <v-list-item-subtitle>Clasificación: {{ nudo.Clasificacion }}</v-list-item-subtitle>
                   </v-list-item-content>
-                    <template #append>
-                      <v-icon size="22" color="grey-darken-1" class="mr-2 cursor-pointer" @click.stop="abrirDialogoEliminar(nudo)">
-                        mdi-delete
-                      </v-icon>
-                    </template>
                 </v-list-item>
                 <v-divider v-if="index < proyectoSeleccionado.Nudo_Critico.length - 1" />
               </template>
@@ -222,55 +205,6 @@
         </v-card-actions>
       </v-card>
     </v-dialog>
-
-    <!-- Dialogo para editar un proyecto -->
-    <v-dialog v-model="dialogoEditarProyecto" persistent max-width="500px">
-      <v-card>
-        <v-card-title class="text-h5">Editar un Proyecto</v-card-title>
-        <v-card-text>
-          <v-form ref="formNuevoNudo">
-            <v-text-field
-              v-model="proyectoSeleccionado.Nombre_Proyecto"
-              label="Nombre Proyecto"
-              outlined
-              dense
-            />
-            <v-text-field
-              v-model="proyectoSeleccionado.Codigo"
-              label="Codigo de Proyecto"
-              outlined
-              dense
-            />
-            <v-select
-              v-model="proyectoSeleccionado.Monitor"
-              :items="monitores"
-              label="Estado"
-              outlined
-              dense
-            />
-
-
-          </v-form>
-        </v-card-text>
-        <v-card-actions>
-          <v-btn color="primary" @click="guardarEditarProyecto">Guardar</v-btn>
-          <v-btn text @click="dialogoEditarProyecto = false">Cancelar</v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
-
-    <!-- Dialogo para confirmar eliminacion de nudo critico -->
-     <v-dialog v-model="dialogoEliminar" max-width="420">
-      <v-card>
-        <v-card-title class="text-h6">Confirmar eliminación</v-card-title>
-        <v-card-text>¿Estás seguro de que deseas eliminar este nudo?</v-card-text>
-        <v-card-actions class="justify-end">
-          <v-btn text @click="dialogoEliminar = false">Cancelar</v-btn>
-          <v-btn color="error" @click="confirmarEliminacion">Eliminar</v-btn>
-        </v-card-actions>
-      </v-card>
-    </v-dialog>
-
   </v-container>
 </template>
 
@@ -278,26 +212,6 @@
 import { ref, computed, onMounted} from 'vue'
 const API_BASE = import.meta.env.VITE_API_URL
 import * as XLSX from "xlsx"
-
-// Lista de monitores
-const monitores = ["Todos", "Carolina Espinosa","Macarena Guerra","Claudia Pastenes","Katherinne Rodriguez","Alejandra Lobos","Javiera Diaz","Javiera Caceres","Joel Cáceres"]
-const clasificaciones = ["Todas",'ALCANTARILLADO','AGUAS ANDINAS','ALUMBRADO PÚBLICO','APR', 'BOMBEROS', 'CGE', 'CNM','CONSTRUCTORA', 'DGA', 'DGAC', 'DIA','DIMAO','DIMAS', 'DOH', 'DOM','DTPM', 'ENEL', 'ENEL COLINA', 'IMIV','METRO GAS','MINVU', 'MOP','OBRA', 'PAVEL', 'SACYR', 'SEC', 'SEREMITT','SEREMI SALUD','SEREMI VIVIENDA','SERVIU','SMAPA','TRANSITO MUNICIPAL','TEP', 'UOCT']
-const estados = ["Todos", "Abierto", "Resuelto"]
-
-// Estado reactivo para el proyecto y nudo crítico seleccionados
-const proyectoSeleccionado = ref(null)
-const busquedaProyecto = ref("")
-const busquedaMonitor = ref("Todos")
-const busquedaClasificacion = ref("Todas")
-const busquedaEstado = ref("Todos")
-const nudoCriticoSeleccionado = ref(null)
-// Dialogos para elimar nudo critico
-const dialogoEliminar = ref(false)
-const nudoAEliminar = ref(null)
-
-// Guardo datos de usuario logueado
-const usuario = JSON.parse(localStorage.getItem("usuario")) || { decretos: [] }
-
 
 function normalizaFecha(f) {
   if (!f) return ""
@@ -408,8 +322,11 @@ async function descargarExcel() {
   }
 }
 
-// Estado para Editar Proyecto
-const dialogoEditarProyecto = ref(false)
+
+// Lista de monitores
+const monitores = ["Todos", "Carolina Espinosa","Macarena Guerra","Claudia Pastenes","Katherinne Rodriguez","Alejandra Lobos","Javiera Diaz","Javiera Caceres","Joel Cáceres"]
+const clasificaciones = ["Todas",'ALCANTARILLADO','AGUAS ANDINAS','ALUMBRADO PÚBLICO','APR', 'BOMBEROS', 'CGE', 'CNM','CONSTRUCTORA', 'DGA', 'DGAC', 'DIA','DIMAO','DIMAS', 'DOH', 'DOM','DTPM', 'ENEL', 'ENEL COLINA', 'IMIV','METRO GAS','MINVU', 'MOP','OBRA', 'PAVEL', 'SACYR', 'SEC', 'SEREMITT','SEREMI SALUD','SEREMI VIVIENDA','SERVIU','SMAPA','TRANSITO MUNICIPAL','TEP', 'UOCT']
+const estados = ["Todos", "Abierto", "Resuelto"]
 
 // Estado para el diálogo y nuevo nudo crítico
 const dialogoNuevoNudo = ref(false)
@@ -472,6 +389,14 @@ async function guardarNuevoNudo() {
     console.log("Seleccione un proyecto antes de agregar un nudo crítico.")
   }
 }
+
+// Estado reactivo para el proyecto y nudo crítico seleccionados
+const proyectoSeleccionado = ref(null)
+const busquedaProyecto = ref("")
+const busquedaMonitor = ref("Todos")
+const busquedaClasificacion = ref("Todas")
+const busquedaEstado = ref("Todos")
+const nudoCriticoSeleccionado = ref(null)
 
 // Computed para filtrar los proyectos según la búsqueda y el monitor
 const proyectosFiltrados = computed(() => {
@@ -558,33 +483,6 @@ async function guardarCambios() {
   }
 }
 
-// Función para guardar los cambios al editar un proyecto
-async function guardarEditarProyecto() {
-    console.log("Proyecto editado:", proyectoSeleccionado.value)
-    
-    try {
-        const respuesta = await fetch(`${API_BASE}/proyecto/`, {
-        method: "PUT",
-        headers: {
-            "Content-Type": "application/json"
-        },
-        
-        body: JSON.stringify(proyectoSeleccionado.value)
-        });
-        if (!respuesta.ok) {
-        throw new Error(`Error al actualizar el proyecto: ${respuesta.statusText}`);
-        }
-    
-        const datos = await respuesta.json();
-        console.log("Proyecto actualizado con éxito");
-        alert("Proyecto actualizado correctamente");
-        dialogoEditarProyecto.value = false
-    } catch (error) {
-        console.error("Error al guardar cambios del proyecto:", error);
-        alert("Hubo un error al guardar los cambios del proyecto, contacte al administrador.");
-    }
-    }
-
 // Estado reactivo para los proyectos obtenidos desde la API
 const proyectos = ref([])
 
@@ -604,66 +502,15 @@ async function obtenerProyectos() {
   }
 }
 
+
+
 // Llamar a la función obtenerProyectos al montar el componente
 onMounted(() => {
   console.log("API_BASE: ",API_BASE);
   obtenerProyectos()
 })
-
-// funcion para eliminar nudo critico de la base de datos
-async function eliminarNudo(nudo) {
-  if (!proyectoSeleccionado.value) return;
-
-  const index = proyectoSeleccionado.value.Nudo_Critico.findIndex(
-    (n) => n.id_nudo === nudo.id_nudo
-  );
-  if (index === -1) return;
-
-  // Eliminar el nudo crítico del array
-  proyectoSeleccionado.value.Nudo_Critico.splice(index, 1);
-
-  try {
-    const campo = "Nudo_Critico";
-    const resp = await fetch(
-      `${API_BASE}/proyecto/${encodeURIComponent(proyectoSeleccionado.value.id)}/${encodeURIComponent(campo)}`,
-      {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(proyectoSeleccionado.value),
-      }
-    );
-
-    if (!resp.ok) {
-      const txt = await resp.text().catch(() => "");
-      throw new Error(`PATCH falló: ${resp.status} ${resp.statusText} ${txt}`);
-    }
-
-    // Si el nudo eliminado era el seleccionado, limpiar la selección
-    if (nudoCriticoSeleccionado.value && nudoCriticoSeleccionado.value.id_nudo === nudo.id_nudo) {
-      nudoCriticoSeleccionado.value = null;
-    }
-  } catch (err) {
-    console.error("Error al eliminar nudo crítico (BD):", err);
-    alert("No se pudo eliminar el nudo crítico. Revisa la consola para más detalles.");
-  }
-}
-
-// funcion para abrir el dialogo de confirmacion de eliminacion
-function abrirDialogoEliminar(nudo) {
-  nudoAEliminar.value = nudo
-  dialogoEliminar.value = true
-}
-
-//Funcion para confirmar la eliminacion del nudo critico
-async function confirmarEliminacion() {
-  if (!nudoAEliminar.value) return
-  console.log("Se elimina proyecto:", nudoAEliminar.value)
-  await eliminarNudo(nudoAEliminar.value)
-  dialogoEliminar.value = false
-  nudoAEliminar.value = null
-}
-
 </script>
+
 
 <style scoped>
 .lista-scroll {

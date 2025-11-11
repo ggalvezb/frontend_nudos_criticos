@@ -8,7 +8,7 @@
         </div>
 
         <v-card class="pa-6" elevation="3" rounded="lg">
-          <h2 class="section-title mb-4">Inicio de sesión NUEVO</h2>
+          <h2 class="section-title mb-4">Inicio de sesión</h2>
 
           <v-form v-model="isValid" @submit.prevent="onSubmit">
             <v-text-field
@@ -54,15 +54,31 @@
 </template>
 
 <script setup>
-
 import { reactive, ref } from 'vue'
 import { useRouter } from 'vue-router'
-const API_BASE = import.meta.env.VITE_API_URL
 
 const router = useRouter()
 const isValid = ref(false)
 const loading = ref(false)
 const showPass = ref(false)
+//Defino usuarios
+const users = [
+  { username: 'ggalvezb', password: 'Serviu2025' },
+  { username: 'cespinosaa', password: 'Serviu2025' },
+  { username: 'mguerram', password: 'Serviu2025' },
+  { username: 'cpastenesr', password: 'Serviu2025' },
+  { username: 'krodriguez', password: 'Serviu2025' },
+  { username: 'alobos', password: 'Serviu2025' },
+  { username: 'jdiazc', password: 'Serviu2025' },
+  { username: 'jcaceresr', password: 'Serviu2025' },
+  { username: 'jcaceresf', password: 'Serviu2025' },
+  { username: 'asignorelli', password: 'Serviu2025' },
+  { username: 'gsotov', password: 'Serviu2025' },
+  { username: 'cperezj', password: 'Serviu2025' },
+  { username: 'mcastroa', password: 'Serviu2025' },
+  { username: 'cmaraboli', password: 'Serviu2025' },
+  { username: 'ffarias', password: 'Serviu2025' },
+]
 
 const form = reactive({
   username: '',
@@ -72,51 +88,37 @@ const form = reactive({
 const rules = {
   required: v => (!!v && String(v).trim().length > 0) || 'Requerido',
 }
+
 async function onSubmit() {
   if (!isValid.value) return
   loading.value = true
   try {
-    // FastAPI usa OAuth2PasswordRequestForm → requiere formato x-www-form-urlencoded
-    const body = new URLSearchParams()
-    body.append('username', form.username)
-    body.append('password', form.password)
-
-    const response = await fetch(`${API_BASE}/auth/login`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/x-www-form-urlencoded',
-      },
-      body: body.toString(),
-    })
-
-    if (!response.ok) {
-      const errorData = await response.json().catch(() => ({}))
-      throw new Error(errorData.detail || 'Credenciales inválidas')
-    }
-
-    const data = await response.json()
-
-    // Guarda el token JWT
-    localStorage.setItem('token', data.access_token)
-    localStorage.setItem('token_type', data.token_type || 'bearer')
-    localStorage.setItem('tipousuario', data.tipousuario)
-    localStorage.setItem('decretos_usuario', data.decretos)
-
-    // Redirige según tipo de usuario
-    if (data.tipousuario === 'admin') {
+    // TODO: reemplaza por tu endpoint de autenticación
+    // const { data } = await api.post('/auth/login', form)
+    // guarda token, redirige, etc.
+    await new Promise(r => setTimeout(r, 800)) // simula petición
+    //checa usuario y clave
+    const user = users.find(
+      u => u.username === form.username && u.password === form.password
+    )
+    if (!user) throw new Error('Usuario o contraseña incorrectos')
+    // Si es uno de los administradores lo llevo a la página de admin
+    if (['ggalvezb', 'jcaceresf'].includes(user.username)) {
       router.push('admin')
-    } else {
-      router.push('inicio')
+      console.log('Login OK', { ...form })
+      return
     }
-    console.log('Login exitoso', { user: form.username })
+    //llevo a la página principal
+    router.push('inicio')
+    console.log('Login OK', { ...form })
   } catch (e) {
+    // maneja error (muestra mensaje, etc.)
     alert(e.message || 'Error en el login')
     console.error('Error de login', e)
   } finally {
     loading.value = false
   }
 }
-
 
 function recover() {
   // Navega a recuperación o abre un diálogo

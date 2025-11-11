@@ -295,10 +295,6 @@ const nudoCriticoSeleccionado = ref(null)
 const dialogoEliminar = ref(false)
 const nudoAEliminar = ref(null)
 
-// Guardo datos de usuario logueado
-const usuario = JSON.parse(localStorage.getItem("usuario")) || { decretos: [] }
-
-
 function normalizaFecha(f) {
   if (!f) return ""
   // Soporta "YYYY-MM-DD", "DD-MM-YYYY" y "YYYY/MM/DD"
